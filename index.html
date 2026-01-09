@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Firewall v2.0 | Cybersecurity Training</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono&display=swap');
+        
+        :root {
+            --primary: #6366f1; --primary-hover: #4f46e5;
+            --success: #10b981; --danger: #f43f5e;
+            --dark-bg: #0f172a; --card-bg: #1e293b;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
+        
+        body { 
+            background-color: var(--dark-bg); 
+            background-image: radial-gradient(circle at 2px 2px, #334155 1px, transparent 0);
+            background-size: 40px 40px;
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: var(--text-main); 
+            margin: 0; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .container { width: 95%; max-width: 800px; margin: 20px; }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 2.5rem; 
+            border-radius: 24px; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .header-box { text-align: center; margin-bottom: 2rem; }
+        h1 { font-weight: 800; font-size: 2.5rem; margin: 0; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace; }
+        .stat-pill { background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+
+        .progress-container { height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 2rem; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(to right, var(--primary), #a855f7); width: 0%; }
+
+        .scenario-box { 
+            background: #0b1120; 
+            padding: 1.5rem; 
+            border-radius: 16px; 
+            border-left: 4px solid var(--primary); 
+            margin: 1.5rem 0;
+            font-size: 1.1rem; line-height: 1.6;
+        }
+
+        .btn { 
+            display: block; width: 100%; padding: 16px; margin-bottom: 12px;
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            font-size: 1rem; font-weight: 600; cursor: pointer; text-align: left;
+            background: rgba(255,255,255,0.05); color: var(--text-main);
+        }
+
+        .btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); border-color: var(--primary); }
+        .btn-main { background: var(--primary); text-align: center; border: none; }
+        .btn-main:hover { background: var(--primary-hover); box-shadow: 0 0 20px rgba(99,102,241,0.4); }
+
+        .footer { 
+            margin-top: 2rem; 
+            text-align: center; 
+            font-size: 0.85rem; 
+            color: var(--text-dim); 
+            font-family: 'JetBrains Mono', monospace;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 1rem;
+        }
+
+        .hidden { display: none; }
+        .badge { color: var(--primary); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="stats-bar">
+        <div class="stat-pill">INDEX: <span id="score">0</span></div>
+        <div class="stat-pill">TASK: <span id="task-num">1</span>/5</div>
+    </div>
+    <div class="progress-container"><div id="progress" class="progress-fill"></div></div>
+
+    <div class="card">
+        <div id="view-start">
+            <div class="header-box">
+                <h1>HUMAN FIREWALL</h1>
+                <p style="color: var(--text-dim)">Developed by Sumithra Murugan</p>
+            </div>
+            <p>Your biological instincts are the last line of defense. High-level social engineering attacks are incoming. Are you prepared to neutralize them?</p>
+            <button class="btn btn-main" onclick="startApp()">INITIALIZE SYSTEM</button>
+        </div>
+
+        <div id="view-quiz" class="hidden">
+            <span class="badge" id="scen-type">IDENTIFIED THREAT</span>
+            <h2 id="scen-title" style="margin-top: 5px;">Threat Title</h2>
+            <div class="scenario-box" id="scen-body"></div>
+            <div id="options-box"></div>
+        </div>
+
+        <div id="view-result" class="hidden">
+            <h2 id="result-title">NEUTRALIZED</h2>
+            <p id="result-text" style="font-size: 1.1rem; color: var(--text-dim)"></p>
+            <button class="btn btn-main" onclick="nextStep()">PROCEED TO NEXT TASK</button>
+        </div>
+
+        <div id="view-final" class="hidden" style="text-align: center;">
+            <h1 id="final-rank">COMMANDER</h1>
+            <p id="final-desc" style="font-size: 1.2rem; margin: 20px 0;"></p>
+            <div class="stat-pill" style="display: inline-block; font-size: 1.5rem; margin-bottom: 20px;">FINAL SCORE: <span id="final-score"></span></div>
+            <button class="btn btn-main" onclick="location.reload()">RE-CALIBRATE</button>
+        </div>
+
+        <div class="footer">
+            Developed by <span style="color: var(--primary)">#MakeEveryoneCyberSafe</span> &copy; 2026
+        </div>
+    </div>
+</div>
+
+<script>
+    // (Same JavaScript logic as before)
+    const scenarios = [
+        {
+            type: "QUISHING (QR PHISHING)",
+            title: "The Free Coffee Sticker",
+            body: "At a popular café, you see a sticker on the table: 'Scan for 50% off your next latte!' with a professional-looking QR code.",
+            options: [
+                { text: "Scan and follow the link to claim the discount.", score: -50, msg: "Scammers place fake stickers over real ones. The link likely leads to a 'credential harvester' mimicking a login page." },
+                { text: "Ignore the sticker and ask the barista if it's official.", score: 50, msg: "Correct. Physical social engineering (stickers/posters) is a rising way to bypass digital filters." }
+            ]
+        },
+        {
+            type: "VISHING (VOICE PHISHING)",
+            title: "The Urgent IT Call",
+            body: "Your desk phone rings. It's 'Mark' from Corporate IT. He says there's a virus on your laptop and he needs to remote-in using 'AnyDesk' to fix it immediately.",
+            options: [
+                { text: "Download the software so Mark can fix the security threat.", score: -100, msg: "This is a classic tech support scam. IT will almost never call you unsolicited to request remote access." },
+                { text: "Ask Mark for his employee ID and say you'll call him back via the internal directory.", score: 50, msg: "Perfect. This is called 'Out-of-Band' verification and it stops voice scammers instantly." }
+            ]
+        },
+        {
+            type: "EVIL TWIN WI-FI",
+            title: "The Airport Connection",
+            body: "You're at the airport. You see two networks: 'Airport_Free_WiFi' (Secure/Lock icon) and 'FREE_Airport_HighSpeed' (Open/No Lock).",
+            options: [
+                { text: "Connect to 'FREE_Airport_HighSpeed' because it's faster.", score: -70, msg: "Evil Twin! This is a rogue hotspot set up to sniff your passwords (Man-in-the-Middle attack)." },
+                { text: "Only use the secure network or your phone's personal hotspot.", score: 50, msg: "Correct. Public open Wi-Fi is a major risk for data interception." }
+            ]
+        },
+        {
+            type: "AI DEEPFAKE",
+            title: "The Video Message",
+            body: "You receive a video message from your CEO. She looks and sounds real. She asks you to send a confidential list of client passwords for an 'emergency audit'.",
+            options: [
+                { text: "Send the passwords immediately; it's a direct order from the top.", score: -100, msg: "AI Video Deepfakes are here. CEOs will NEVER ask for passwords via video messages." },
+                { text: "Flag the video to Security and do not respond.", score: 50, msg: "Spot on. Any high-pressure request for credentials—even from a 'CEO'—must be treated as a threat." }
+            ]
+        },
+        {
+            type: "BROWSER HIJACK",
+            title: "The Mandatory Update",
+            body: "While reading a news site, a popup appears: 'Warning! Your Chrome browser is out of date. Click here to install the security patch.msi'",
+            options: [
+                { text: "Download the patch to stay secure.", score: -80, msg: "Browsers update automatically. Clicking web popups to install files is a direct path to malware." },
+                { text: "Close the tab and check Chrome settings manually.", score: 50, msg: "Smart. Never trust a website telling you that your computer needs an update." }
+            ]
+        }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function startApp() {
+        document.getElementById('view-start').classList.add('hidden');
+        document.getElementById('view-quiz').classList.remove('hidden');
+        loadScenario();
+    }
+
+    function loadScenario() {
+        const s = scenarios[current];
+        document.getElementById('task-num').innerText = current + 1;
+        document.getElementById('scen-type').innerText = s.type;
+        document.getElementById('scen-title').innerText = s.title;
+        document.getElementById('scen-body').innerHTML = s.body;
+        
+        const box = document.getElementById('options-box');
+        box.innerHTML = '';
+        s.options.forEach(o => {
+            const b = document.createElement('button');
+            b.className = 'btn';
+            b.innerText = o.text;
+            b.onclick = () => finishScen(o);
+            box.appendChild(b);
+        });
+        document.getElementById('progress').style.width = (current / scenarios.length * 100) + "%";
+    }
+
+    function finishScen(opt) {
+        score += opt.score;
+        document.getElementById('score').innerText = score;
+        document.getElementById('view-quiz').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        
+        const resTitle = document.getElementById('result-title');
+        resTitle.innerText = opt.score > 0 ? "SECURE CHOICE" : "SYSTEM BREACHED";
+        resTitle.style.color = opt.score > 0 ? "var(--success)" : "var(--danger)";
+        document.getElementById('result-text').innerText = opt.msg;
+    }
+
+    function nextStep() {
+        current++;
+        if(current < scenarios.length) {
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-quiz').classList.remove('hidden');
+            loadScenario();
+        } else {
+            showFinal();
+        }
+    }
+
+    function showFinal() {
+        document.getElementById('view-result').classList.add('hidden');
+        document.getElementById('view-final').classList.remove('hidden');
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('progress').style.width = "100%";
+        
+        let rank = "CIVILIAN";
+        let desc = "You fell for several traps. Spend some time learning about phishing before you get hacked for real!";
+        
+        if(score >= 200) { rank = "CYBER COMMANDER"; desc = "Excellent! You are a human firewall."; }
+        else if(score >= 100) { rank = "SECURITY ANALYST"; desc = "Good job, but stay vigilant."; }
+        
+        document.getElementById('final-rank').innerText = rank;
+        document.getElementById('final-desc').innerText = desc;
+    }
+</script>
+
+</body>
+</html>
